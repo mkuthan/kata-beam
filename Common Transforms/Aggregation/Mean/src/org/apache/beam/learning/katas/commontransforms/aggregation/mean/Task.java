@@ -42,7 +42,7 @@ public class Task {
   }
 
   static PCollection<Double> applyTransform(PCollection<Integer> input) {
-    return TODO();
+    return input.apply(Mean.globally());
   }
 
 }

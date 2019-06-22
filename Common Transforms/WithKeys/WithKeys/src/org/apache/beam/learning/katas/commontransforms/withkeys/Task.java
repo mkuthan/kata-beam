@@ -18,8 +18,6 @@
 
 package org.apache.beam.learning.katas.commontransforms.withkeys;
 
-import static org.apache.beam.sdk.values.TypeDescriptors.strings;
-
 import org.apache.beam.learning.katas.util.Log;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
@@ -28,6 +26,8 @@ import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.WithKeys;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+
+import static org.apache.beam.sdk.values.TypeDescriptors.strings;
 
 public class Task {
 
@@ -47,7 +47,11 @@ public class Task {
   }
 
   static PCollection<KV<String, String>> applyTransform(PCollection<String> input) {
-    return TODO();
+    return input.apply(
+        WithKeys
+            .<String, String>of(word -> word.substring(0, 1))
+            .withKeyType(strings())
+    );
   }
 
 }

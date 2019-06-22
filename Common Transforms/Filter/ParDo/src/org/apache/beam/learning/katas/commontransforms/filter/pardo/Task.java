@@ -24,8 +24,10 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.Filter;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PCollection;
+import org.joda.time.Duration;
 
 public class Task {
 
@@ -43,7 +45,7 @@ public class Task {
   }
 
   static PCollection<Integer> applyTransform(PCollection<Integer> input) {
-    return TODO();
+    return input.apply(Filter.by(number -> number % 2 != 0));
   }
 
 }

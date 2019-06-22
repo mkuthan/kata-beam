@@ -52,7 +52,7 @@ public class Task {
   }
 
   static PCollection<Event> applyTransform(PCollection<Event> events) {
-    return TODO();
+    return events.apply(WithTimestamps.of(event -> event.getDate().toInstant()));
   }
 
 }

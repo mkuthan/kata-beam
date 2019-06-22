@@ -42,7 +42,7 @@ public class Task {
   }
 
   static PCollection<Long> applyTransform(PCollection<Integer> input) {
-    return TODO();
+    return input.apply(Count.globally());
   }
 
 }

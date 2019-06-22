@@ -42,7 +42,7 @@ public class Task {
   }
 
   static PCollection<Integer> applyTransform(PCollection<Integer> input) {
-    return TODO();
+    return input.apply(Min.integersGlobally());
   }
 
 }

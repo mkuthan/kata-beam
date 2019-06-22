@@ -18,8 +18,6 @@
 
 package org.apache.beam.learning.katas.io.textio.read;
 
-import static org.apache.beam.sdk.values.TypeDescriptors.strings;
-
 import org.apache.beam.learning.katas.util.Log;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
@@ -27,6 +25,10 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.values.PCollection;
+
+import java.util.Locale;
+
+import static org.apache.beam.sdk.values.TypeDescriptors.strings;
 
 public class Task {
 
@@ -37,7 +39,7 @@ public class Task {
     Pipeline pipeline = Pipeline.create(options);
 
     PCollection<String> countries =
-        pipeline.apply("Read Countries", TODO());
+        pipeline.apply("Read Countries", TextIO.read().from(FILE_PATH));
 
     PCollection<String> output = applyTransform(countries);
 
@@ -47,7 +49,10 @@ public class Task {
   }
 
   static PCollection<String> applyTransform(PCollection<String> input) {
-    return TODO();
+    return input.apply(MapElements
+        .into(strings())
+        .via(country -> country.toUpperCase(Locale.ENGLISH))
+    );
   }
 
 }

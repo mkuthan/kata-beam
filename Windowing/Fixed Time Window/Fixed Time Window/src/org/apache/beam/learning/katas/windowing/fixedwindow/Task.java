@@ -62,7 +62,9 @@ public class Task {
   }
 
   static PCollection<KV<String, Long>> applyTransform(PCollection<String> events) {
-    return TODO();
+    return events
+        .apply(Window.into(FixedWindows.of(Duration.standardDays(1))))
+        .apply(Count.perElement());
   }
 
 }

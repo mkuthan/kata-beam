@@ -53,7 +53,12 @@ public class Task {
   }
 
   static PCollection<Event> applyTransform(PCollection<Event> events) {
-    return TODO();
+    return events.apply(ParDo.of(new DoFn<Event, Event>() {
+      @ProcessElement
+      public void processElement(@Element Event event, OutputReceiver<Event> out) {
+        out.outputWithTimestamp(event, event.getDate().toInstant());
+      }
+    }));
   }
 
 }

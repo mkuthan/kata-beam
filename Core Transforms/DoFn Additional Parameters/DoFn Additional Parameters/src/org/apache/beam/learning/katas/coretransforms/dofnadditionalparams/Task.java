@@ -18,9 +18,19 @@
 
 package org.apache.beam.learning.katas.coretransforms.dofnadditionalparams;
 
+import org.apache.beam.learning.katas.util.Log;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.Create;
+import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.windowing.GlobalWindow;
+import org.apache.beam.sdk.transforms.windowing.PaneInfo;
+import org.apache.beam.sdk.values.PCollection;
+import org.joda.time.Instant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Task {
 
@@ -28,9 +38,39 @@ public class Task {
     PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
     Pipeline pipeline = Pipeline.create(options);
 
+    PCollection<Integer> numbers =
+        pipeline.apply(Create.of(1, 2, 3, 4, 5));
 
+    PCollection<Integer> output = applyTransform(numbers);
+
+    output.apply(Log.ofElements());
 
     pipeline.run();
+  }
+
+  static PCollection<Integer> applyTransform(PCollection<Integer> input) {
+    return input.apply(ParDo.of(new MultiplyBy10Fn()));
+  }
+
+  static class MultiplyBy10Fn extends DoFn<Integer, Integer> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MultiplyBy10Fn.class);
+
+    @ProcessElement
+    public void processElement(@Element Integer in,
+                               OutputReceiver<Integer> out,
+                               @Timestamp Instant ts,
+                               GlobalWindow window,
+                               PaneInfo paneInfo,
+                               PipelineOptions options) {
+      LOG.info("Timestamp: {}", ts);
+      LOG.info("Window: {}", window);
+      LOG.info("PaneInfo: {}", paneInfo);
+      LOG.info("Options: {}", options);
+
+      out.output(in * 10);
+    }
+
   }
 
 }
