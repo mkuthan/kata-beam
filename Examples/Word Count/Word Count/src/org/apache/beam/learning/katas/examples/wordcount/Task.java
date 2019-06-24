@@ -18,19 +18,17 @@
 
 package org.apache.beam.learning.katas.examples.wordcount;
 
-import java.util.Arrays;
 import org.apache.beam.learning.katas.util.Log;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.transforms.Count;
-import org.apache.beam.sdk.transforms.Create;
-import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.transforms.FlatMapElements;
-import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
-import org.apache.beam.sdk.values.TypeDescriptors;
+
+import java.util.Arrays;
+
+import static org.apache.beam.sdk.values.TypeDescriptors.strings;
 
 public class Task {
 
@@ -54,7 +52,18 @@ public class Task {
   }
 
   static PCollection<String> applyTransform(PCollection<String> input) {
-    return TODO();
+    return input
+        .apply(FlatMapElements.into(strings()).via(sentence -> Arrays.asList(sentence.split(" "))))
+        .apply(Count.perElement())
+        .apply(ParDo.of(new DoFn<KV<String, Long>, String>() {
+          @ProcessElement
+          public void processElement(@Element KV<String, Long> counts, OutputReceiver<String> out) {
+            String word = counts.getKey();
+            Long count = counts.getValue();
+
+            out.output(String.format("%s:%d", word, count));
+          }
+        }));
   }
 
 }

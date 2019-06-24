@@ -47,7 +47,13 @@ public class Task {
   }
 
   static PCollection<Long> applyTransform(PCollection<String> events) {
-    return TODO();
+    return events
+        .apply(Window
+            .<String>into(FixedWindows.of(Duration.standardSeconds(5)))
+            .triggering(AfterWatermark.pastEndOfWindow())
+            .withAllowedLateness(Duration.standardSeconds(0))
+            .discardingFiredPanes())
+        .apply(Combine.globally(Count.<String>combineFn()).withoutDefaults());
   }
 
 }
